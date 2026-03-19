@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+   moduleFormat    = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model categories {
+  id             String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String     @unique(map: "categories_name_unique")
+  created_at     DateTime?  @default(now()) @db.Timestamptz(6)
+  sequence_order Int?       @default(0)
+  nominees       nominees[]
+  votes          votes[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model movies {
+  id         String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  title      String     @unique(map: "movies_title_unique")
+  created_at DateTime?  @default(now()) @db.Timestamptz(6)
+  nominees   nominees[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model nominees {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  movie_id     String     @db.Uuid
+  category_id  String     @db.Uuid
+  nominee_name String?
+  created_at   DateTime?  @default(now()) @db.Timestamptz(6)
+  url_image    String?    @default("https://s2-gshow.glbimg.com/KIfsgPzVx8g-zWDxOSGy4llwWLw=/0x0:1080x1182/984x0/smart/filters:strip_icc()/i.s3.glbimg.com/v1/AUTH_e84042ef78cb4708aeebdf1c68c6cbd6/internal_photos/bs/2026/y/S/gpOY25TAizQq9IcyUHeg/theacademy-20260102-150058-1663833045.jpg")
+  categories   categories @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nominees_category")
+  movies       movies     @relation(fields: [movie_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_nominees_movie")
+  votes        votes[]
+  winners      winners?
+
+  @@unique([movie_id, category_id, nominee_name])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model schema_migrations {
+  version    String   @id
+  applied_at DateTime @db.Timestamptz(6)
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model users {
+  id            String   @id @db.Uuid
+  nickname      String
+  bio           String?
+  email         String   @unique
+  password_hash String
+  created_at    DateTime @default(now()) @db.Timestamptz(6)
+  role          String?  @default("user") @db.VarChar(20)
+  votes         votes[]
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model votes {
+  id           Int        @id @default(autoincrement())
+  user_id      String     @db.Uuid
+  nominated_id String     @db.Uuid
+  category_id  String     @db.Uuid
+  created_at   DateTime   @default(now()) @db.Timestamptz(6)
+  categories   categories @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  nominees     nominees   @relation(fields: [nominated_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  users        users      @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([user_id, category_id])
+}
+
+/// This model contains row level security and requires additional setup for migrations. Visit https://pris.ly/d/row-level-security for more info.
+model winners {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nominated_id String    @unique @db.Uuid
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  nominees     nominees  @relation(fields: [nominated_id], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
