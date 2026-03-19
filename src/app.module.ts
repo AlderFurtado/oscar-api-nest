@@ -5,9 +5,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CategoryModule } from './category/category.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { AuthModule } from './auth/auth.module';
+import { UsersModule } from './users/users.module';
+import { PrismaService } from './prisma.service';
 
 @Module({
   imports: [
+    UsersModule,
     CategoryModule,
     // global throttling: 10 requests per 60 seconds (named 'default')
     ThrottlerModule.forRoot({
@@ -19,6 +23,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
         },
       ],
     }),
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [

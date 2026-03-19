@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+      POSTGRES_DB: oscar
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      target: runner
+    restart: on-failure
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      # Default DATABASE_URL for local dev (can be overridden in .env)
+      DATABASE_URL: "postgresql://postgres:example@db:5432/oscar"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
+    name: oscar_postgres_data
