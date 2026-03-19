@@ -16,7 +16,6 @@ export class CategoryController {
   // allow 10 requests per 60 seconds
   @Get()
   findAll() {
-    console.log("aqui")
     return this.categoryService.findAll();
   }
 
