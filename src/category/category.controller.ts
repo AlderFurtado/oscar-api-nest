@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import { Throttle } from '@nestjs/throttler';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('category')
 export class CategoryController {
@@ -13,7 +13,7 @@ export class CategoryController {
     return this.categoryService.create(createCategoryDto);
   }
 
-  // allow 10 requests per 60 seconds
+  @UseGuards(AuthGuard)
   @Get()
   findAll() {
     return this.categoryService.findAll();

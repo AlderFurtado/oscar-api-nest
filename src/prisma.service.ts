@@ -7,12 +7,12 @@ import { PrismaClient } from 'generated/prisma/client';
 export class PrismaService extends PrismaClient {
   constructor() {
     const adapter = new PrismaPg({
-      host: "db",
-      port: 5432,
-      user: "postgres",
-      password: "example",
-      database: "oscar"
-    });
+      host: process.env.DB_HOST ?? "db",
+      port: parseInt(process.env.DB_PORT ?? "5432"),
+      user: process.env.DB_USER ?? "postgres",
+      password: process.env.DB_PASSWORD ?? "example",
+      database: process.env.DB_NAME ?? "oscar"
+        });
     super({ adapter });
   }
 }
