@@ -16,3 +16,13 @@ docker compose exec db psql -U postgres -d oscar -c "INSERT INTO \"categories\" 
 ```bash
 http://localhost:3000/api
 ```
+
+
+### Next steps
+[] Hashing Password User auth
+[] Inputs Validation
+[] Add Logging
+[] Add Error Handling
+[] Add version API
+[] Add rate limit
+[] Add Unit Test and E2E test
