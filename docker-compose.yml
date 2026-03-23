@@ -29,7 +29,8 @@ services:
       # Default DATABASE_URL for local dev (can be overridden in .env)
       DATABASE_URL: "postgresql://postgres:example@db:5432/oscar"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
 
   pgadmin:
     image: dpage/pgadmin4:7
